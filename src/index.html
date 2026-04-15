@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>План перехода на 1С УНФ</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-bg">
+            <div class="grid-pattern"></div>
+        </div>
+        <nav class="navbar">
+            <div class="container">
+                <div class="nav-content">
+                    <div class="logo">
+                        <span class="logo-icon"><i class="fas fa-cube"></i></span>
+                        <span class="logo-text">1С УНФ</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="hero-content container">
+            <div class="hero-badge">Стратегический проект</div>
+            <h1 class="hero-title">
+                План перехода<br>
+                <span class="gradient-text">на 1С УНФ</span>
+            </h1>
+            <p class="hero-subtitle">Комплексная стратегия миграции бизнес-процессов на платформу 1С:Управление нашей фирмой</p>
+            
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="total-tasks">12</div>
+                        <div class="stat-label">Основных задач</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="completed-tasks">0</div>
+                        <div class="stat-label">Выполнено</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="in-progress-tasks">0</div>
+                        <div class="stat-label">В работе</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-number" id="progress-percent">0%</div>
+                        <div class="stat-label">Прогресс</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress Overview -->
+    <section id="overview" class="overview-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Прогресс</span>
+                <h2 class="section-title">Общий прогресс перехода</h2>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar" id="main-progress">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-label">
+                        <span id="progress-text">0% завершено</span>
+                    </div>
+                </div>
+                
+                <div class="milestones">
+                    <div class="milestone" data-step="1">
+                        <div class="milestone-dot"><i class="fas fa-cog"></i></div>
+                        <div class="milestone-label">Настройка</div>
+                    </div>
+                    <div class="milestone" data-step="2">
+                        <div class="milestone-dot"><i class="fas fa-users"></i></div>
+                        <div class="milestone-label">Подготовка</div>
+                    </div>
+                    <div class="milestone" data-step="3">
+                        <div class="milestone-dot"><i class="fas fa-exchange-alt"></i></div>
+                        <div class="milestone-label">Переход</div>
+                    </div>
+                    <div class="milestone" data-step="4">
+                        <div class="milestone-dot"><i class="fas fa-flag-checkered"></i></div>
+                        <div class="milestone-label">Завершение</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Plan Section -->
+    <section id="plan" class="plan-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">План</span>
+                <h2 class="section-title">План перехода на 1С УНФ</h2>
+                <button class="btn-primary" id="add-task-btn">
+                    <i class="fas fa-plus"></i> Добавить задачу
+                </button>
+            </div>
+
+            <div class="tasks-container" id="tasks-container">
+                <!-- Tasks will be rendered here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Workflow Section -->
+    <section id="workflow" class="workflow-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Взаимодействие</span>
+                <h2 class="section-title">Инструкции по взаимодействию с Заказом Покупателя</h2>
+            </div>
+
+            <div class="workflow-grid">
+                <div class="workflow-card" data-workflow-key="creation">
+                    <div class="workflow-icon">
+                        <i class="fas fa-plus-circle"></i>
+                    </div>
+                    <h3>Создание Заказа покупателя</h3>
+                    <p class="workflow-desc">Как создать карточку и работать в Заказе покупателя</p>
+                </div>
+                <div class="workflow-card" data-workflow-key="finplan">
+                    <div class="workflow-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Финансовый план</h3>
+                    <p class="workflow-desc">Как сформировать финплан по заказу</p>
+                </div>
+                <div class="workflow-card" data-workflow-key="fund-request">
+                    <div class="workflow-icon">
+                        <i class="fas fa-paper-plane"></i>
+                    </div>
+                    <h3>Запрос средств</h3>
+                    <p class="workflow-desc">Как отправить заявку на запрос средств</p>
+                </div>
+                <div class="workflow-card" data-workflow-key="payments">
+                    <div class="workflow-icon">
+                        <i class="fas fa-money-check-alt"></i>
+                    </div>
+                    <h3>Контроль оплат</h3>
+                    <p class="workflow-desc">Где смотреть все оплаты и привязывать к Заказу</p>
+                </div>
+                <div class="workflow-card" data-workflow-key="documents">
+                    <div class="workflow-icon">
+                        <i class="fas fa-file-upload"></i>
+                    </div>
+                    <h3>Документы</h3>
+                    <p class="workflow-desc">Загрузка закрывающих документов, ДС и субподрядных документов</p>
+                </div>
+                <div class="workflow-card" data-workflow-key="banks">
+                    <div class="workflow-icon">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <h3>Банки</h3>
+                    <p class="workflow-desc">Где смотреть банковские операции и счета</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Migration Section -->
+    <section id="migration" class="migration-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">Перенос</span>
+                <h2 class="section-title">Порядок переноса карточки из Glide в 1С</h2>
+            </div>
+
+            <div class="migration-steps" id="migration-steps">
+                <!-- Migration steps will be rendered here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Add Task Modal -->
+    <div class="modal" id="add-task-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus-circle"></i> Добавить новую задачу</h3>
+                <button class="modal-close"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="add-task-form">
+                <div class="form-group">
+                    <label for="task-title">Название задачи *</label>
+                    <input type="text" id="task-title" placeholder="Введите название задачи" required>
+                </div>
+                <div class="form-group">
+                    <label for="task-description">Описание</label>
+                    <textarea id="task-description" placeholder="Подробное описание задачи"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="task-deadline">Срок выполнения</label>
+                        <input type="date" id="task-deadline">
+                    </div>
+                    <div class="form-group">
+                        <label for="task-responsible">Ответственный</label>
+                        <input type="text" id="task-responsible" placeholder="ФИО ответственного">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="task-section">Раздел</label>
+                    <select id="task-section">
+                        <option value="main">Основной план</option>
+                        <option value="workflow">Взаимодействие</option>
+                        <option value="migration">Перенос карточки</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary modal-cancel">Отмена</button>
+                    <button type="submit" class="btn-primary">Добавить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Task Modal -->
+    <div class="modal" id="edit-task-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> Редактировать задачу</h3>
+                <button class="modal-close"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="edit-task-form">
+                <input type="hidden" id="edit-task-id">
+                <input type="hidden" id="edit-task-parent">
+                <div class="form-group">
+                    <label for="edit-task-title">Название задачи *</label>
+                    <input type="text" id="edit-task-title" placeholder="Введите название задачи" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-task-description">Описание</label>
+                    <textarea id="edit-task-description" placeholder="Подробное описание задачи"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-task-deadline">Срок выполнения</label>
+                        <input type="date" id="edit-task-deadline">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-task-responsible">Ответственный</label>
+                        <input type="text" id="edit-task-responsible" placeholder="ФИО ответственного">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="edit-task-status">Статус</label>
+                    <select id="edit-task-status">
+                        <option value="pending">В ожидании</option>
+                        <option value="in-progress">В работе</option>
+                        <option value="completed">Выполнено</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary modal-cancel">Отмена</button>
+                    <button type="submit" class="btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Subtask Modal -->
+    <div class="modal" id="add-subtask-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-sm">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus"></i> Добавить подзадачу</h3>
+                <button class="modal-close"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="add-subtask-form">
+                <input type="hidden" id="subtask-parent-id">
+                <div class="form-group">
+                    <label for="subtask-title">Название подзадачи *</label>
+                    <input type="text" id="subtask-title" placeholder="Введите название подзадачи" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="subtask-deadline">Срок</label>
+                        <input type="date" id="subtask-deadline">
+                    </div>
+                    <div class="form-group">
+                        <label for="subtask-responsible">Ответственный</label>
+                        <input type="text" id="subtask-responsible" placeholder="ФИО">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary modal-cancel">Отмена</button>
+                    <button type="submit" class="btn-primary">Добавить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Workflow Instruction Modal -->
+    <div class="modal" id="workflow-instruction-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-book-open"></i> <span id="workflow-instruction-title"></span></h3>
+                <button class="modal-close"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <!-- View Mode -->
+            <div id="workflow-view-mode">
+                <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
+                    <button class="btn-primary btn-sm" id="edit-workflow-btn">
+                        <i class="fas fa-edit"></i> Редактировать
+                    </button>
+                </div>
+                <div id="workflow-instruction-content" class="workflow-instruction-content"></div>
+            </div>
+
+            <!-- Edit Mode -->
+            <div id="workflow-edit-mode" style="display:none;">
+                <form id="workflow-edit-form">
+                    <input type="hidden" id="workflow-edit-key">
+                    <div class="form-group">
+                        <label for="workflow-edit-title">Заголовок</label>
+                        <input type="text" id="workflow-edit-title">
+                    </div>
+                    <div class="form-group">
+                        <label for="workflow-edit-desc">Описание (отображается на карточке)</label>
+                        <textarea id="workflow-edit-desc" rows="2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="workflow-edit-content">Инструкция (полный текст)</label>
+                        <textarea id="workflow-edit-content" rows="12" style="min-height:250px;font-family:monospace;"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" id="cancel-workflow-edit-bottom">Отмена</button>
+                        <button type="submit" class="btn-primary">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Modal -->
+    <div class="modal" id="password-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-sm">
+            <div class="modal-header">
+                <h3><i class="fas fa-lock"></i> Вход администратора</h3>
+                <button class="modal-close"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="password-form">
+                <div class="form-group">
+                    <label for="admin-password">Введите пароль</label>
+                    <input type="password" id="admin-password" placeholder="Пароль администратора" required>
+                </div>
+                <div id="password-error" style="color:var(--primary-red);font-size:13px;margin-bottom:12px;display:none;">Неверный пароль</div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary modal-cancel">Отмена</button>
+                    <button type="submit" class="btn-primary">Войти</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Migration Step Modal -->
+    <div class="modal" id="edit-migration-modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content modal-sm">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> Редактировать шаг</h3>
+                <button class="modal-close"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="edit-migration-form">
+                <input type="hidden" id="edit-migration-id">
+                <div class="form-group">
+                    <label for="edit-migration-title">Название *</label>
+                    <input type="text" id="edit-migration-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-migration-desc">Описание</label>
+                    <textarea id="edit-migration-desc" rows="4"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary modal-cancel">Отмена</button>
+                    <button type="submit" class="btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon"><i class="fas fa-cube"></i></span>
+                    <span class="logo-text">1С УНФ</span>
+                </div>
+                <p class="footer-text">План перехода на 1С УНФ &copy; 2026</p>
+                <div class="footer-links">
+                    <a href="#overview">Обзор</a>
+                    <a href="#plan">План</a>
+                    <a href="#workflow">Взаимодействие</a>
+                    <a href="#migration">Перенос</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
