@@ -270,13 +270,16 @@ async function apiDeleteTask(taskId) {
 
 async function apiInsertSubtask(subtask) {
     try {
-        await fetch(`${API_BASE}/api/subtasks`, {
+        const resp = await fetch(`${API_BASE}/api/subtasks`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(subtask)
         });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        return true;
     } catch (e) {
         console.warn('[API] Subtask insert failed:', e);
+        return false;
     }
 }
 
@@ -302,26 +305,57 @@ async function apiDeleteSubtask(subtaskId) {
 
 async function apiUpdateWorkflow(key, updates) {
     try {
-        await fetch(`${API_BASE}/api/workflow/${key}`, {
+        const resp = await fetch(`${API_BASE}/api/workflow/${key}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: getAdminHeaders(),
             body: JSON.stringify(updates)
         });
+        if (!resp.ok) {
+            const error = await resp.json().catch(() => ({}));
+            throw new Error(error.error || `HTTP ${resp.status}`);
+        }
+        return true;
     } catch (e) {
         console.warn('[API] Workflow update failed:', e);
+        showPasswordError(e.message || 'Не удалось сохранить изменения.');
+        adminSessionPassword = '';
+        return false;
     }
 }
 
 async function apiUpdateMigration(stepId, updates) {
     try {
-        await fetch(`${API_BASE}/api/migration/${stepId}`, {
+        const resp = await fetch(`${API_BASE}/api/migration/${stepId}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: getAdminHeaders(),
             body: JSON.stringify(updates)
         });
+        if (!resp.ok) {
+            const error = await resp.json().catch(() => ({}));
+            throw new Error(error.error || `HTTP ${resp.status}`);
+        }
+        return true;
     } catch (e) {
         console.warn('[API] Migration update failed:', e);
+        showPasswordError(e.message || 'Не удалось сохранить изменения.');
+        adminSessionPassword = '';
+        return false;
     }
+}
+
+function getAdminHeaders() {
+    const headers = { 'Content-Type': 'application/json' };
+    if (adminSessionPassword) {
+        headers['x-admin-password'] = adminSessionPassword;
+    }
+    return headers;
+}
+
+function showPasswordError(message) {
+    const errorEl = document.getElementById('password-error');
+    if (!errorEl) return;
+    errorEl.textContent = message || 'Неверный пароль';
+    errorEl.style.display = 'block';
 }
 
 // ===== EVENT DELEGATION =====
@@ -479,18 +513,18 @@ function initGlobalEventListeners() {
         
         const taskId = checkbox.id.replace('check-', '');
         const task = appData.tasks.find(t => t.id === taskId);
-        if (task && !e.target.closest('.subtask-checkbox')) {
-            task.status = checkbox.checked ? 'completed' : 'pending';
-            apiUpdateTaskStatus(task.id, task.status);
-            saveData();
-            renderTasks();
-        }
+        if (!task) return;
+        
+        task.status = checkbox.checked ? 'completed' : 'pending';
+        apiUpdateTaskStatus(task.id, task.status);
+        saveData();
+        renderTasks();
     });
-    
+
     // Event: Subtask checkbox toggle
     tasksContainer.addEventListener('change', (e) => {
-        const checkbox = e.target.closest('.subtask-checkbox input[type="checkbox"]');
-        if (!checkbox) return;
+        const checkbox = e.target.closest('input[type="checkbox"]');
+        if (!checkbox || !checkbox.id.startsWith('subcheck-')) return;
         
         const subtaskId = checkbox.id.replace('subcheck-', '');
         for (const task of appData.tasks) {
@@ -504,64 +538,62 @@ function initGlobalEventListeners() {
             }
         }
     });
-    
-    // Event: Toggle task expand
+
+    // Event: Expand/collapse task
     tasksContainer.addEventListener('click', (e) => {
-        const card = e.target.closest('.task-card');
-        if (!card) return;
-        
-        if (e.target.closest('.task-action-btn') || e.target.closest('.task-checkbox')) return;
-        
         const header = e.target.closest('.task-header');
-        if (header && card.querySelector('.task-toggle-icon')) {
+        if (!header) return;
+        if (e.target.closest('.task-checkbox, .task-actions, .drag-handle')) return;
+        
+        const card = header.closest('.task-card');
+        if (card) {
             card.classList.toggle('expanded');
         }
     });
-    
+
     // Event: Add subtask button
     tasksContainer.addEventListener('click', (e) => {
         const btn = e.target.closest('.add-subtask, .add-subtask-btn');
         if (!btn) return;
         e.stopPropagation();
-        const taskId = btn.dataset.taskId;
-        openAddSubtaskModal(taskId);
+        openAddSubtaskModal(btn.dataset.taskId);
     });
-    
-    // Event: Edit task button
+
+    // Event: Edit task
     tasksContainer.addEventListener('click', (e) => {
         const btn = e.target.closest('.edit-task');
         if (!btn) return;
         e.stopPropagation();
         openEditTaskModal(btn.dataset.taskId);
     });
-    
-    // Event: Delete task button
+
+    // Event: Delete task
     tasksContainer.addEventListener('click', (e) => {
         const btn = e.target.closest('.delete-task');
         if (!btn) return;
         e.stopPropagation();
-        if (confirm('Вы уверены, что хотите удалить эту задачу?')) {
+        if (confirm('Удалить задачу?')) {
             apiDeleteTask(btn.dataset.taskId);
             appData.tasks = appData.tasks.filter(t => t.id !== btn.dataset.taskId);
             saveData();
             renderTasks();
         }
     });
-    
-    // Event: Edit subtask button
+
+    // Event: Edit subtask
     tasksContainer.addEventListener('click', (e) => {
         const btn = e.target.closest('.edit-subtask');
         if (!btn) return;
         e.stopPropagation();
         openEditSubtaskModal(btn.dataset.parentId, btn.dataset.subtaskId);
     });
-    
-    // Event: Delete subtask button
+
+    // Event: Delete subtask
     tasksContainer.addEventListener('click', (e) => {
         const btn = e.target.closest('.delete-subtask');
         if (!btn) return;
         e.stopPropagation();
-        if (confirm('Удалить эту подзадачу?')) {
+        if (confirm('Удалить подзадачу?')) {
             apiDeleteSubtask(btn.dataset.subtaskId);
             const parentTask = appData.tasks.find(t => t.id === btn.dataset.parentId);
             if (parentTask) {
@@ -573,43 +605,44 @@ function initGlobalEventListeners() {
     });
 }
 
-// ===== UTILITY =====
+// ===== HELPERS =====
 function generateId() {
-    return 'task-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    return 'task-' + Date.now();
 }
 
 function generateSubId() {
-    return 'sub-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    return 'sub-' + Date.now();
 }
 
 function formatDate(dateStr) {
     if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('ru-RU');
 }
 
-// ===== RENDER =====
+// ===== RENDERING =====
 function renderTasks() {
     const container = document.getElementById('tasks-container');
     container.innerHTML = '';
-    
+
     appData.tasks.forEach((task, index) => {
-        const taskCard = createTaskElement(task, index + 1);
+        const taskCard = createTaskCard(task, index + 1);
         container.appendChild(taskCard);
     });
-    
+
     updateStatistics();
 }
 
-function createTaskElement(task, number) {
+function createTaskCard(task, number) {
     const card = document.createElement('div');
-    card.className = `task-card ${task.status} fade-in visible`;
+    const isCompleted = task.status === 'completed';
+    const isInProgress = task.status === 'in-progress';
+    card.className = `task-card fade-in visible ${isCompleted ? 'completed' : ''} ${isInProgress ? 'in-progress' : ''}`;
     card.dataset.taskId = task.id;
-    card.draggable = true;
-    
+
     const completedSubtasks = task.subtasks.filter(s => s.completed).length;
     const totalSubtasks = task.subtasks.length;
-    
+
     card.innerHTML = `
         <div class="task-header">
             <div class="drag-handle" title="Перетащите для изменения порядка">
@@ -873,11 +906,13 @@ document.getElementById('add-subtask-form').addEventListener('submit', (e) => {
     } else {
         // Adding new subtask
         const newSubtask = {
+            task_id: parentId,
             id: generateSubId(),
             title: title,
             deadline: document.getElementById('subtask-deadline').value,
             responsible: document.getElementById('subtask-responsible').value.trim(),
-            completed: false
+            completed: false,
+            order: parentTask.subtasks.length
         };
         parentTask.subtasks.push(newSubtask);
         apiInsertSubtask(newSubtask);
@@ -944,8 +979,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ===== WORKFLOW INSTRUCTIONS =====
-const ADMIN_PASSWORD = 'SeregaGornostaevZdoroviyMuzhik';
-let adminAuthenticated = false;
+let adminSessionPassword = '';
 let pendingWorkflowAction = null;
 
 function openWorkflowInstruction(key) {
@@ -1013,18 +1047,10 @@ function openWorkflowEditForm(key) {
 }
 
 document.getElementById('edit-workflow-btn').addEventListener('click', () => {
-    console.log('[WF Edit] Button clicked. adminAuthenticated:', adminAuthenticated);
     const key = document.getElementById('workflow-edit-key').value;
-    console.log('[WF Edit] Key:', key);
-    
-    if (!adminAuthenticated) {
-        pendingWorkflowAction = { type: 'workflow-edit', key };
-        document.getElementById('admin-password').value = '';
-        document.getElementById('password-error').style.display = 'none';
-        console.log('[WF Edit] Opening password modal');
-        openModal('password-modal');
+    if (!adminSessionPassword) {
+        requestAdminForWorkflow(key);
     } else {
-        console.log('[WF Edit] Already authenticated, opening edit form');
         openWorkflowEditForm(key);
     }
 });
@@ -1034,7 +1060,7 @@ document.getElementById('cancel-workflow-edit-bottom').addEventListener('click',
     openWorkflowInstruction(key);
 });
 
-document.getElementById('workflow-edit-form').addEventListener('submit', (e) => {
+document.getElementById('workflow-edit-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     
     const key = document.getElementById('workflow-edit-key').value;
@@ -1045,10 +1071,14 @@ document.getElementById('workflow-edit-form').addEventListener('submit', (e) => 
     if (!newTitle || !newContent) return;
     
     if (appData.workflowInstructions[key]) {
+        const saved = await apiUpdateWorkflow(key, { title: newTitle, description: newDesc, content: newContent });
+        if (!saved) {
+            requestAdminForWorkflow(key, document.getElementById('password-error').textContent);
+            return;
+        }
         appData.workflowInstructions[key].title = newTitle;
         appData.workflowInstructions[key].description = newDesc;
         appData.workflowInstructions[key].content = newContent;
-        apiUpdateWorkflow(key, { title: newTitle, description: newDesc, content: newContent });
         saveData();
     }
     
@@ -1074,33 +1104,41 @@ document.getElementById('cancel-workflow-edit-bottom').addEventListener('click',
     openWorkflowInstruction(key);
 });
 
-function requestAdminForWorkflow(key) {
+function requestAdminForWorkflow(key, errorMessage = '') {
     pendingWorkflowAction = { type: 'workflow-edit', key };
     document.getElementById('admin-password').value = '';
-    document.getElementById('password-error').style.display = 'none';
+    if (errorMessage) {
+        showPasswordError(errorMessage);
+    } else {
+        showPasswordError('');
+        document.getElementById('password-error').style.display = 'none';
+    }
     openModal('password-modal');
 }
 
-function requestAdminForMigration() {
+function requestAdminForMigration(errorMessage = '') {
     pendingWorkflowAction = { type: 'migration-edit' };
     document.getElementById('admin-password').value = '';
-    document.getElementById('password-error').style.display = 'none';
+    if (errorMessage) {
+        showPasswordError(errorMessage);
+    } else {
+        showPasswordError('');
+        document.getElementById('password-error').style.display = 'none';
+    }
     openModal('password-modal');
 }
 
 function handlePasswordSubmit() {
     const password = document.getElementById('admin-password').value;
-    if (password !== ADMIN_PASSWORD) {
-        document.getElementById('password-error').style.display = 'block';
+    if (!password) {
+        showPasswordError('Введите пароль');
         return false;
     }
 
-    adminAuthenticated = true;
+    adminSessionPassword = password;
     
     // Only close password modal, keep others open
     document.getElementById('password-modal').classList.remove('active');
-    delete window._editingSubtask;
-    delete window._pendingMigrationId;
 
     if (pendingWorkflowAction) {
         if (pendingWorkflowAction.type === 'workflow-edit') {
@@ -1137,17 +1175,25 @@ function openEditMigrationForm(stepId) {
     openModal('edit-migration-modal');
 }
 
-document.getElementById('edit-migration-form').addEventListener('submit', (e) => {
+document.getElementById('edit-migration-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     
     const stepId = parseInt(document.getElementById('edit-migration-id').value);
     const step = appData.migrationSteps.find(s => s.id === stepId);
     if (!step) return;
     
-    step.title = document.getElementById('edit-migration-title').value.trim();
-    step.description = document.getElementById('edit-migration-desc').value.trim();
+    const nextTitle = document.getElementById('edit-migration-title').value.trim();
+    const nextDescription = document.getElementById('edit-migration-desc').value.trim();
 
-    apiUpdateMigration(step.id, { title: step.title, description: step.description });
+    const saved = await apiUpdateMigration(step.id, { title: nextTitle, description: nextDescription });
+    if (!saved) {
+        window._pendingMigrationId = step.id;
+        requestAdminForMigration(document.getElementById('password-error').textContent);
+        return;
+    }
+
+    step.title = nextTitle;
+    step.description = nextDescription;
     saveData();
     renderMigrationSteps();
     closeAllModals();
@@ -1176,7 +1222,7 @@ document.addEventListener('click', (e) => {
 
     const stepId = parseInt(stepEl.dataset.stepId);
 
-    if (!adminAuthenticated) {
+    if (!adminSessionPassword) {
         window._pendingMigrationId = stepId;
         requestAdminForMigration();
     } else {

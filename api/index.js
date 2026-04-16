@@ -15,6 +15,22 @@ module.exports = async (req, res) => {
     const url = req.url || '';
     const parts = url.split('/').filter(Boolean);
 
+    const requireAdminPassword = () => {
+        const expectedPassword = process.env.ADMIN_PASSWORD;
+        if (!expectedPassword) {
+            res.status(500).json({ error: 'ADMIN_PASSWORD is not configured' });
+            return false;
+        }
+
+        const providedPassword = req.headers['x-admin-password'];
+        if (providedPassword !== expectedPassword) {
+            res.status(401).json({ error: 'Неверный пароль администратора' });
+            return false;
+        }
+
+        return true;
+    };
+
     try {
         // GET /api/data — load all data
         if (req.method === 'GET' && parts[1] === 'data') {
@@ -161,6 +177,7 @@ module.exports = async (req, res) => {
 
         // PUT /api/workflow/:key
         if (req.method === 'PUT' && parts[1] === 'workflow' && parts[2]) {
+            if (!requireAdminPassword()) return;
             const key = parts[2];
             const { title, description, content } = req.body;
             await pool.query(
@@ -172,6 +189,7 @@ module.exports = async (req, res) => {
 
         // PUT /api/migration/:stepId
         if (req.method === 'PUT' && parts[1] === 'migration' && parts[2]) {
+            if (parts[2] !== 'status' && !requireAdminPassword()) return;
             const stepId = parts[2];
             const { title, description } = req.body;
             await pool.query(
